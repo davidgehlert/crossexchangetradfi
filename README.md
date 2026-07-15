@@ -1,6 +1,6 @@
 # S&P 500 Spread — HyperLiquid vs. another exchange
 
-Monitors (and optionally arbitrages) the price **spread** of the S&P 500 between
+Monitors (and optionally arbitrage) the price **spread** of the S&P 500 between
 the **HyperLiquid** `xyz:SP500` perp and a second venue. The default comparison
 leg is **Yahoo Finance** (`^GSPC`, the cash index) — free, no account, runs on
 macOS — with optional **MetaTrader 5** for a real broker feed.
