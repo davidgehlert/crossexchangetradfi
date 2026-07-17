@@ -53,3 +53,5 @@ class PaperBroker(Broker):
             self._position = BrokerPosition(self.symbol, new_size, px)
         log.info("[PAPER] fill %s size=%s @ %s", self.symbol, signed_size, px)
         return {"filled": signed_size, "price": px}
+
+
