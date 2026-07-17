@@ -365,15 +365,55 @@ _STYLE = """
   :root{ --bg:#ffffff; --panel:#ffffff; --soft:#f6f7f9; --ink:#0b0b0c;
          --muted:#6b7280; --faint:#9ca3af; --line:#ececec; --line2:#e5e7eb;
          --accent:#16a34a; --indigo:#4f46e5; --pos:#16a34a; --neg:#dc2626;
-         color-scheme: light; }
+         --panel-grad:linear-gradient(180deg,#fff,#fbfbfc);
+         --topbar-bg:rgba(255,255,255,.85); --shadow:rgba(0,0,0,.03);
+         --mark:linear-gradient(135deg,#0b0b0c,#3b3b3f);
+         --grid:#f0f1f3; color-scheme: light; }
+  :root[data-theme="dark"]{ --bg:#0b0d10; --panel:#15181d; --soft:#0e1013; --ink:#e8eaed;
+         --muted:#9aa0a6; --faint:#6b7280; --line:#23262c; --line2:#2c3038;
+         --accent:#22c55e; --indigo:#818cf8; --pos:#22c55e; --neg:#f87171;
+         --panel-grad:linear-gradient(180deg,#181b21,#15181d);
+         --topbar-bg:rgba(17,19,23,.85); --shadow:rgba(0,0,0,.4);
+         --mark:linear-gradient(135deg,#e8eaed,#9aa0a6);
+         --grid:#20242b; color-scheme: dark; }
   *{ box-sizing:border-box; }
   html,body{ margin:0; }
   body{ font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,sans-serif;
-        color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased; }
+        color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased;
+        transition:background .2s ease, color .2s ease; }
   a{ color:inherit; text-decoration:none; }
   .brand{ display:flex; align-items:center; gap:9px; font-weight:600; font-size:16px; }
   .mark{ width:18px; height:18px; border-radius:6px; display:inline-block;
-         background:linear-gradient(135deg,#0b0b0c,#3b3b3f); }
+         background:var(--mark); }
+  .themebtn{ display:inline-flex; align-items:center; justify-content:center;
+         width:34px; height:34px; border-radius:999px; border:1px solid var(--line2);
+         background:var(--panel); color:var(--ink); cursor:pointer; font-size:15px;
+         line-height:1; transition:border-color .2s, transform .08s, background .2s; }
+  .themebtn:hover{ border-color:var(--faint); transform:translateY(-1px); }
+"""
+
+_THEME_JS = """
+  (function(){
+    var saved = localStorage.getItem('theme');
+    var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+    window.__setTheme = function(t){
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      document.querySelectorAll('.themebtn').forEach(function(b){ b.textContent = t === 'dark' ? '☀' : '☾'; });
+      if (window.__onThemeChange) window.__onThemeChange(t);
+    };
+    window.__toggleTheme = function(){
+      var cur = document.documentElement.getAttribute('data-theme');
+      window.__setTheme(cur === 'dark' ? 'light' : 'dark');
+    };
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('.themebtn').forEach(function(b){
+        b.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾';
+        b.addEventListener('click', window.__toggleTheme);
+      });
+    });
+  })();
 """
 
 LANDING = """<!doctype html>
@@ -382,36 +422,37 @@ LANDING = """<!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Spread — live HyperLiquid vs. Capital.com spreads</title>
+<script>""" + _THEME_JS + """</script>
 <style>
 """ + _STYLE + """
   .nav{ display:flex; align-items:center; justify-content:space-between;
         max-width:1120px; margin:0 auto; padding:20px 28px; }
-  .navlinks{ display:flex; gap:26px; font-size:14px; color:#3b3b3f; }
-  .navlinks a:hover{ color:#000; }
+  .navlinks{ display:flex; align-items:center; gap:26px; font-size:14px; color:var(--muted); }
+  .navlinks a:hover{ color:var(--ink); }
   .hero{ max-width:840px; margin:0 auto; padding:64px 24px 24px; text-align:center; }
-  .badge{ display:inline-flex; align-items:center; gap:8px; font-size:12.5px; color:#52525b;
+  .badge{ display:inline-flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted);
           border:1px solid var(--line); border-radius:999px; padding:6px 14px; margin-bottom:30px; }
   .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent);
         box-shadow:0 0 0 3px rgba(22,163,74,.15); }
   h1{ font-size:64px; line-height:1.02; letter-spacing:-.025em; font-weight:600; margin:0 0 22px; }
   .sub{ font-size:18px; line-height:1.55; color:var(--muted); max-width:560px; margin:0 auto 36px; }
   .cta{ display:flex; gap:22px; align-items:center; justify-content:center; }
-  .btn{ background:var(--ink); color:#fff; border-radius:999px; padding:14px 28px;
+  .btn{ background:var(--ink); color:var(--bg); border-radius:999px; padding:14px 28px;
         font-size:15px; font-weight:500; cursor:pointer; transition:transform .08s ease, opacity .2s; }
   .btn:hover{ opacity:.88; transform:translateY(-1px); }
-  .ghost{ font-size:15px; color:#3b3b3f; }
-  .ghost:hover{ color:#000; }
+  .ghost{ font-size:15px; color:var(--muted); }
+  .ghost:hover{ color:var(--ink); }
   .strip{ max-width:1000px; margin:70px auto 0; padding:0 24px; text-align:center; }
   .striplabel{ font-size:11px; letter-spacing:.18em; color:var(--faint); font-weight:600; margin-bottom:22px; }
   .chips{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
   .chip{ border:1px solid var(--line); border-radius:14px; padding:13px 16px; min-width:104px;
-         font-size:12px; color:var(--faint); background:#fff;
+         font-size:12px; color:var(--faint); background:var(--panel);
          transition:box-shadow .2s, transform .08s, border-color .2s; }
   .chip:hover{ box-shadow:0 10px 28px rgba(0,0,0,.07); transform:translateY(-2px); border-color:var(--line2); }
   .chip b{ display:block; font-size:14px; color:var(--ink); font-weight:600; margin-bottom:3px; }
   .how{ max-width:920px; margin:92px auto 84px; padding:0 24px;
         display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
-  .step{ border:1px solid var(--line); border-radius:16px; padding:22px; background:#fff; }
+  .step{ border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--panel); }
   .step .n{ font-size:12px; color:var(--accent); font-weight:700; }
   .step h3{ font-size:16px; margin:8px 0 6px; }
   .step p{ font-size:13.5px; color:var(--muted); line-height:1.55; margin:0; }
@@ -427,6 +468,7 @@ LANDING = """<!doctype html>
       <a href="#markets">Markets</a>
       <a href="#how">How it works</a>
       <a href="/app">Dashboard</a>
+      <button class="themebtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
     </div>
   </nav>
   <section class="hero">
@@ -475,11 +517,12 @@ PAGE = """<!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Spread — dashboard</title>
+<script>""" + _THEME_JS + """</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 """ + _STYLE + """
   body{ background:var(--soft); }
-  .topbar{ position:sticky; top:0; z-index:10; background:rgba(255,255,255,.85);
+  .topbar{ position:sticky; top:0; z-index:10; background:var(--topbar-bg);
            backdrop-filter:saturate(180%) blur(10px); border-bottom:1px solid var(--line);
            display:flex; align-items:center; justify-content:space-between; gap:16px;
            padding:13px 24px; flex-wrap:wrap; }
@@ -487,7 +530,7 @@ PAGE = """<!doctype html>
   .controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
   .field{ display:flex; flex-direction:column; gap:3px; }
   .field label{ font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); }
-  select{ appearance:none; -webkit-appearance:none; background:#fff
+  select{ appearance:none; -webkit-appearance:none; background:var(--panel)
           url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 11px center;
           border:1px solid var(--line2); border-radius:10px; padding:7px 30px 7px 12px;
           font-size:13px; color:var(--ink); cursor:pointer; }
@@ -500,14 +543,14 @@ PAGE = """<!doctype html>
   .metaline b{ color:var(--ink); font-weight:600; }
   .cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-bottom:18px; }
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:14px;
-         padding:16px 18px; box-shadow:0 1px 2px rgba(0,0,0,.03); }
-  .card.hero-card{ background:linear-gradient(180deg,#fff,#fbfbfc); }
+         padding:16px 18px; box-shadow:0 1px 2px var(--shadow); }
+  .card.hero-card{ background:var(--panel-grad); }
   .card .k{ font-size:11px; color:var(--faint); text-transform:uppercase; letter-spacing:.05em; }
   .card .v{ font-size:28px; font-weight:700; margin-top:8px; font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
   .card .sub{ font-size:12px; color:var(--faint); margin-top:5px; }
   .pos{ color:var(--pos); } .neg{ color:var(--neg); } .muted{ color:var(--faint); }
   .chart-wrap{ background:var(--panel); border:1px solid var(--line); border-radius:16px;
-               padding:18px; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+               padding:18px; box-shadow:0 1px 2px var(--shadow); }
 </style>
 </head>
 <body>
@@ -517,6 +560,7 @@ PAGE = """<!doctype html>
     <div class="field"><label for="sym">Symbol</label><select id="sym"></select></div>
     <div class="field"><label for="tf">Timeframe</label><select id="tf"></select></div>
     <span class="statuspill" id="status"><span class="dot"></span><span id="statustxt">connecting…</span></span>
+    <button class="themebtn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
   </div>
 </div>
 <main>
@@ -542,25 +586,53 @@ let symReady = false;
 tfSelect.addEventListener('change', () => { currentTf = tfSelect.value; refresh(); });
 symSelect.addEventListener('change', () => { currentSym = symSelect.value; refresh(); });
 
+function themeColors(){
+  const cs = getComputedStyle(document.documentElement);
+  const accent = (cs.getPropertyValue('--indigo') || '#4f46e5').trim();
+  return {
+    accent,
+    faint: (cs.getPropertyValue('--faint') || '#9ca3af').trim(),
+    muted: (cs.getPropertyValue('--muted') || '#6b7280').trim(),
+    grid: (cs.getPropertyValue('--grid') || '#f0f1f3').trim(),
+  };
+}
+
+function applyChartTheme(){
+  if (!chart) return;
+  const t = themeColors();
+  chart.data.datasets[0].borderColor = t.accent;
+  chart.data.datasets[0].backgroundColor = t.accent + '1a';
+  chart.options.scales.x.ticks.color = t.faint;
+  chart.options.scales.x.grid.color = t.grid;
+  chart.options.scales.y.title.color = t.faint;
+  chart.options.scales.y.ticks.color = t.faint;
+  chart.options.scales.y.grid.color = t.grid;
+  chart.options.plugins.legend.labels.color = t.muted;
+  chart.update();
+}
+
 function makeChart(){
+  const t = themeColors();
   chart = new Chart(ctx, {
     type: 'line',
     data: { labels: [], datasets: [
-      { label: 'Spread (price diff)', data: [], borderColor: '#4f46e5',
-        backgroundColor: 'rgba(79,70,229,.10)', borderWidth: 1.8, pointRadius: 0,
+      { label: 'Spread (price diff)', data: [], borderColor: t.accent,
+        backgroundColor: t.accent + '1a', borderWidth: 1.8, pointRadius: 0,
         tension: .15, fill: true, yAxisID: 'y' },
     ]},
     options: {
       animation: false, responsive: true, interaction: { mode: 'index', intersect: false },
       scales: {
-        x: { ticks: { color: '#9ca3af', maxTicksLimit: 10, autoSkip: true }, grid: { color: '#f0f1f3' } },
-        y: { title: { display: true, text: 'price difference (HL − comparison)', color: '#9ca3af' },
-             ticks: { color: '#9ca3af' }, grid: { color: '#f0f1f3' } },
+        x: { ticks: { color: t.faint, maxTicksLimit: 10, autoSkip: true }, grid: { color: t.grid } },
+        y: { title: { display: true, text: 'price difference (HL − comparison)', color: t.faint },
+             ticks: { color: t.faint }, grid: { color: t.grid } },
       },
-      plugins: { legend: { labels: { color: '#6b7280', usePointStyle: true, boxWidth: 8 } } },
+      plugins: { legend: { labels: { color: t.muted, usePointStyle: true, boxWidth: 8 } } },
     }
   });
 }
+
+window.__onThemeChange = applyChartTheme;
 
 function fmt(v, d=2){ return (v===null||v===undefined) ? '—' : Number(v).toFixed(d); }
 

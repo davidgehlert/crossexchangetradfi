@@ -26,7 +26,7 @@ python dashboard.py     # landing page at http://127.0.0.1:8000/ ; live charts a
 The defaults compare HyperLiquid `xyz:SP500` against Yahoo `^GSPC` and never
 place a trade.
 
-## How it works
+## How it works is relatively easy
 
 Each loop the bot:
 
@@ -65,6 +65,7 @@ Built-in registry keys:
 | `btc` | `BTC` (perp) | `BTCUSD` | `BTC-USD` | 24/7 on both venues |
 | `btcspot` | `@142` (UBTC/USDC spot) | `BTCUSD` | `BTC-USD` | HL spot leg; compare vs `btc` for basis |
 | `ustech100` | `xyz:XYZ100` | `US100` | `^NDX` | Nasdaq-100 proxy, market hours only |
+| `sndk` | `xyz:SNDK` | `SNDK` | `SNDK` | single stock, Capital **live** account only |
 
 Add more by appending `SymbolPair` entries to `PAIR_REGISTRY`. Two notes:
 

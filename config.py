@@ -85,10 +85,6 @@ PAIR_REGISTRY: dict[str, SymbolPair] = {
     # pair uses the Yahoo backend and converts KRW->USD via the KRW=X FX pair so
     # the two legs share a scale (price_ratio 1.0). Note: KRX only trades during
     # Korean hours, so the Yahoo quote is a stale last-close outside that window.
-    "skhynix": SymbolPair(
-        "skhynix", "SK Hynix", "xyz:SKHX", "xyz", 1.0, "", "000660.KS", "000660.KS",
-        broker="yahoo", yahoo_fx="KRW=X",
-    ),
 }
 
 
