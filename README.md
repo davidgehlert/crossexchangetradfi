@@ -1,4 +1,4 @@
-# S&P 500 Spread — HyperLiquid vs. another exchange
+# S&P 500 Spread — HyperLiquid vs. capital.com
 
 Monitors (and optionally arbitrage) the price **spread** of the S&P 500 between
 the **HyperLiquid** `xyz:SP500` perp and a second venue. The default comparison
@@ -12,7 +12,7 @@ bot using the same spread is also included but is **off by default**.
 > ⚠️ **Risk warning.** Algorithmic trading is risky and you can lose money. This
 > code is provided "as is", with no warranty, and almost certainly contains
 > bugs. Test thoroughly on **testnet / paper / a demo account** before risking
-> real capital. Nothing here is investment advice.
+> real capital. Nothing here is intended investment advice.
 
 ## Quick start (just watch the spread)
 
